@@ -1,4 +1,7 @@
+#include <algorithm>
+
 #include "main_window.h"
+#include <QTabBar>
 #include "job_options.h"
 #include "job_widget.h"
 #include "list_of_job_options.h"
@@ -17,6 +20,34 @@
 #include "osx_helper.h"
 #endif
 #include "file_dialog.h"
+
+// Text colour of the fixed tabs (Remotes, Jobs, Tasks, Queue, Scheduler), to
+// tell them apart from the tabs of the opened remotes.
+// Put here the colour you like as "#rrggbb", or "" to keep the default colour.
+static const char *FIXED_TABS_TEXT_COLOR = "#e0a050";
+
+static void ApplyFixedTabsTextColor(QTabWidget *tabs) {
+  QColor color(FIXED_TABS_TEXT_COLOR);
+  if (!color.isValid()) {
+    return;
+  }
+  QTabBar *bar = tabs->findChild<QTabBar *>();
+  if (!bar) {
+    return;
+  }
+  for (int i = 0; i < 5; i++) {
+    bar->setTabTextColor(i, color);
+  }
+}
+
+// show or hide the Tasks, Queue and Scheduler tabs according to preferences;
+// tab positions do not change and hidden tabs keep working in the background
+static void ApplyOptionalTabsVisibility(QTabWidget *tabs) {
+  auto settings = GetSettings();
+  tabs->setTabVisible(2, !settings->value("Settings/hideTasksTab", false).toBool());
+  tabs->setTabVisible(3, !settings->value("Settings/hideQueueTab", false).toBool());
+  tabs->setTabVisible(4, !settings->value("Settings/hideSchedulerTab", false).toBool());
+}
 
 MainWindow::MainWindow() {
 
@@ -640,6 +671,22 @@ MainWindow::MainWindow() {
       mSoundNotif = dialog.getSoundNotif();
 
       mSystemTray.setVisible(mAlwaysShowInTray);
+
+      settings->setValue("Settings/hideTasksTab", dialog.getHideTasksTab());
+      settings->setValue("Settings/hideQueueTab", dialog.getHideQueueTab());
+      settings->setValue("Settings/hideSchedulerTab",
+                         dialog.getHideSchedulerTab());
+      ApplyOptionalTabsVisibility(ui.tabs);
+
+      // hide or show the icons in the remote tabs already open; the icons of
+      // the fixed tabs are not touched
+      settings->setValue("Settings/hideRemoteIcons",
+                         dialog.getHideRemoteIcons());
+      for (int i = 0; i < ui.tabs->count(); i++) {
+        if (auto remoteTab = qobject_cast<RemoteWidget *>(ui.tabs->widget(i))) {
+          remoteTab->setButtonsHidden(dialog.getHideRemoteIcons());
+        }
+      }
     }
   });
 
@@ -2000,6 +2047,9 @@ MainWindow::MainWindow() {
 
   ui.tabs->setCurrentIndex(0);
 
+  ApplyOptionalTabsVisibility(ui.tabs);
+  ApplyFixedTabsTextColor(ui.tabs);
+
   {
     restoreSchedulersFromFile();
     listTasks();
@@ -2940,6 +2990,15 @@ void MainWindow::rcloneListRemotes() {
           QString bytes = p->readAllStandardOutput().trimmed();
           QStringList items = bytes.split('\n');
 
+          // sort remotes by name in plain character-code order (case
+          // sensitive, uppercase before lowercase), like rclone listremotes
+          std::sort(items.begin(), items.end(),
+                    [](const QString &a, const QString &b) {
+                      return a.section(':', 0, 0)
+                                 .compare(b.section(':', 0, 0),
+                                          Qt::CaseSensitive) < 0;
+                    });
+
           auto settings = GetSettings();
           bool darkModeIni = settings->value("Settings/darkModeIni").toBool();
           QString iconSize = settings->value("Settings/iconSize").toString();
@@ -2970,31 +3029,9 @@ void MainWindow::rcloneListRemotes() {
             if (darkModeIconScale == lightModeiconScale) {
             };
 
-            // set icons scale based on iconSize value
-            if (iconSize == "S") {
-              lightModeiconScale = 3;
-              darkModeIconScale = 2;
-            }
-
-            if (iconSize == "M") {
-              lightModeiconScale = 4;
-              darkModeIconScale = 2.666;
-            }
-
-            if (iconSize == "L") {
-              lightModeiconScale = 6;
-              darkModeIconScale = 4;
-            }
-
-            if (iconSize == "XL") {
-              lightModeiconScale = 8;
-              darkModeIconScale = 5.333;
-            }
-
-            if (iconSize == "XXL") {
-              lightModeiconScale = 15;
-              darkModeIconScale = 10;
-            }
+            // icons scale from preferences (number, or old letter values)
+            lightModeiconScale = RemotesIconScaleFromSetting(iconSize);
+            darkModeIconScale = lightModeiconScale;
 
             // disable scaling - all is fusion now
             // let's leave scaling logic for now
@@ -3075,7 +3112,7 @@ void MainWindow::rcloneListRemotes() {
               ui.remotes->setViewMode(QListWidget::ListMode);
               ui.remotes->setResizeMode(QListView::Adjust);
               ui.remotes->setWrapping(false);
-              ui.remotes->setGridSize(QSize(size + 800, size + 20));
+              ui.remotes->setGridSize(QSize(size + 8, size + 8));
             }
             if (mIconsLayout == "list") {
               ui.remotes->setViewMode(QListWidget::ListMode);

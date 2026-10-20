@@ -8,6 +8,8 @@ Simple cross platform GUI for [rclone](https://rclone.org/) command line tool.
 
 Supports macOS, Windows, GNU/Linux and BSD family.
 
+**This is a customized fork:** see [FORK_CHANGES.md](FORK_CHANGES.md) for the changes in this fork.
+
 <img src="https://github.com/kapitainsky/RcloneBrowser/wiki/images/readme/osLogos.png" width="50%" />
 
 Table of contents
