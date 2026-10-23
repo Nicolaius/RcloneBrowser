@@ -1,13 +1,28 @@
 # Customizations in this fork
 
-This fork of [Alkl58/RcloneBrowser](https://github.com/Alkl58/RcloneBrowser)
-(itself derived from [kapitainsky/RcloneBrowser](https://github.com/kapitainsky/RcloneBrowser)
-and the original work by Martins Mozeiko) adds a few interface options.
-The original license (MIT) and copyright notices are unchanged.
+Fork maintained by [Nicolaius](https://github.com/Nicolaius/RcloneBrowser) of
+[Alkl58/RcloneBrowser](https://github.com/Alkl58/RcloneBrowser), itself derived
+from [kapitainsky/RcloneBrowser](https://github.com/kapitainsky/RcloneBrowser)
+and the original work by Martins Mozeiko. The original license (MIT) and
+copyright notices are unchanged.
+
 Part of the code was written with the help of an AI assistant (Claude) and
 reviewed and tested by the maintainer of this fork.
 
-## New features
+## Version 2.1
+
+- **Compact transfer window** – the details of a job (Started/Finished, transfer
+  statistics, "Show Output") take less vertical space, the output box keeps its
+  height, so the whole job entry is shorter.
+- **Colored Started / Finished** – *Started* is always green. *Finished* uses the
+  colour of the final status: green when the job ended OK, red on error or when
+  stopped. Applies to the transfer (job) window only.
+- **Version in the window title** – "Rclone Browser - 2.1 version" replaces
+  "BETA release".
+- **About dialog** – shows v2.1 and a "Modified by Nicolaius" line; the original
+  credits are kept.
+
+## Version 2.0 (customized)
 
 - **Remotes icon size as a multiplier** – Preferences → GUI style → Remotes icon
   size: the XS/S/M/L/XL radio buttons are replaced by a numeric field
@@ -32,7 +47,8 @@ reviewed and tested by the maintainer of this fork.
   ```
 
   When streaming a file a small dialog asks which player to use. With a single
-  command nothing changes. Arguments and `$file_name` work as before.
+  command nothing changes. Arguments and `$file_name` work as before, e.g.
+  `mpv - --force-media-title="$file_name" | vlc -`.
 
 ## Settings keys added (`rclone-browser.conf`, section `[Settings]`)
 
@@ -42,6 +58,14 @@ reviewed and tested by the maintainer of this fork.
 | `hideTasksTab`, `hideQueueTab`, `hideSchedulerTab` | hide the optional tabs |
 | `hideRemoteIcons` | hide the icon row in remote tabs |
 | `stream` | may contain several commands separated by `\|` |
+
+## Notes
+
+- The "new version available" check still queries the upstream repository
+  (kapitainsky/RcloneBrowser), not this fork.
+- Automatic builds (AppImage, Windows, macOS, FreeBSD) are produced by the GitHub
+  Actions workflow and published under *Releases*. Qt 6 is required, so Windows 8
+  and older are not supported.
 
 ## Build
 

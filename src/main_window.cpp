@@ -59,9 +59,11 @@ MainWindow::MainWindow() {
 #endif
 
   if (IsPortableMode()) {
-    this->setWindowTitle("Rclone Browser - portable mode - BETA release");
+    this->setWindowTitle(QString("Rclone Browser - portable mode - %1 version")
+                             .arg(RCLONE_BROWSER_VERSION));
   } else {
-    this->setWindowTitle("Rclone Browser - BETA release");
+    this->setWindowTitle(
+        QString("Rclone Browser - %1 version").arg(RCLONE_BROWSER_VERSION));
   }
 
   auto settings = GetSettings();
@@ -707,7 +709,9 @@ MainWindow::MainWindow() {
 
             R"(<p>Copyright &copy; 2019-2020 <a href="https://github.com/kapitainsky/RcloneBrowser/blob/master/LICENSE">kapitainsky</a></p>)"
 
-            R"(<p>Current development and maintenance<br /><a href="https://github.com/kapitainsky/RcloneBrowser">kapitainsky</a></p>)"
+            R"(<p>Modified by <a href="https://github.com/Nicolaius/RcloneBrowser">Nicolaius</a> (fork of Alkl58/RcloneBrowser)</p>)"
+
+            R"(<p>Previous development and maintenance<br /><a href="https://github.com/kapitainsky/RcloneBrowser">kapitainsky</a></p>)"
 
             R"(<p>New features and fixes<br /><a href="https://github.com/kapitainsky/RcloneBrowser/graphs/contributors">contributors</a></p>)"
 

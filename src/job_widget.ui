@@ -461,7 +461,7 @@ QToolButton:pressed {
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>15</height>
+          <height>0</height>
          </size>
         </property>
        </spacer>
@@ -573,7 +573,7 @@ QToolButton:pressed {
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>15</height>
+          <height>0</height>
          </size>
         </property>
        </spacer>
@@ -608,7 +608,7 @@ QToolButton:pressed {
        </widget>
       </item>
       <item row="4" column="2" colspan="8">
-       <widget class="QLineEdit" name="le_StartFinishInfo">
+       <widget class="QLabel" name="le_StartFinishInfo">
         <property name="contextMenuPolicy">
          <enum>Qt::NoContextMenu</enum>
         </property>
@@ -616,16 +616,13 @@ QToolButton:pressed {
          <string notr="true">* { background-color: rgba(0, 0, 0, 0); }</string>
         </property>
         <property name="text">
-         <string>Started: Sat, 11-Apr-2020 09:15:01 BST                                                 Finished: Sat, 11-Apr-2020 09:15:01 BST</string>
+         <string>Started: Sat, 11-Apr-2020 09:15:01 BST          Finished: Sat, 11-Apr-2020 09:15:01 BST</string>
         </property>
-        <property name="frame">
-         <bool>false</bool>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
         </property>
-        <property name="cursorPosition">
-         <number>126</number>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
+        <property name="textInteractionFlags">
+         <set>Qt::TextSelectableByMouse</set>
         </property>
        </widget>
       </item>
@@ -640,7 +637,7 @@ QToolButton:pressed {
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>5</height>
+          <height>0</height>
          </size>
         </property>
        </spacer>

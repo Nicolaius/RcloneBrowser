@@ -407,13 +407,34 @@ QDateTime JobWidget::getStartDateTime() { return mStartDateTime; }
 
 void JobWidget::updateStartFinishInfo() {
 
+  // Started is always green, Finished uses the colour of the final status:
+  // green when the job ended OK, red on error or when stopped
+  const QString green = "green";
+  const QString red = "red";
+  QString finishColor;
+  if (mStatus == "1_transfer_finished") {
+    finishColor = green;
+  } else if (mStatus == "2_transfer_error" ||
+             mStatus == "2_transfer_stopped") {
+    finishColor = red;
+  }
+
+  const QLocale english(QLocale::English);
+  const QString format = "ddd, dd/MMM/yyyy HH:mm:ss t";
+  const QString nbsp = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                       "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+
+  QString finished = "Finished:&nbsp; " +
+                     english.toString(mFinishDateTime, format).toHtmlEscaped();
+  if (!finishColor.isEmpty()) {
+    finished = "<span style=\"color:" + finishColor + ";\">" + finished +
+               "</span>";
+  }
+
   ui.le_StartFinishInfo->setText(
-      "Started:   " +
-      QLocale(QLocale::English)
-          .toString(mStartDateTime, "ddd, dd/MMM/yyyy HH:mm:ss t") +
-      "              " + "Finished:  " +
-      QLocale(QLocale::English)
-          .toString(mFinishDateTime, "ddd, dd/MMM/yyyy HH:mm:ss t"));
+      "<span style=\"color:" + green + ";\">Started:&nbsp;&nbsp; " +
+      english.toString(mStartDateTime, format).toHtmlEscaped() + "</span>" +
+      nbsp + finished);
 }
 
 QString JobWidget::getStatus() { return mStatus; }
