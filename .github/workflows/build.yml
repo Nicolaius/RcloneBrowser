@@ -148,32 +148,26 @@ jobs:
          
   build_linux_arm64:
     name: Linux Build (AppImage, ARM64)
-    # GitHub-hosted native ARM64 runner (free for public repositories)
-    runs-on: ubuntu-24.04-arm
+    # Built on Ubuntu 22.04 with the distribution's Qt 6 (6.2) so the AppImage
+    # only needs glibc 2.35 and runs on Ubuntu 22.04 and newer.
+    # (The prebuilt Qt 6.10 for ARM64 needs glibc 2.38 = Ubuntu 24.04+)
+    runs-on: ubuntu-22.04-arm
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: 'linux_arm64'
-          target: 'desktop'
-          arch: 'linux_gcc_arm64'
-          modules: 'qtmultimedia'
 
       - name: Install build and runtime dependencies
         run: |
           sudo apt update
           sudo apt -y install \
-            build-essential cmake file patchelf \
-            libgl1-mesa-dev \
+            build-essential cmake file patchelf git \
+            qt6-base-dev qt6-base-dev-tools qmake6 qt6-multimedia-dev \
+            libqt6svg6 qt6-wayland \
+            libgl1-mesa-dev libglu1-mesa-dev \
             libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-image0 \
             libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
             libxcb-xinerama0 libxcb-xkb1 \
-            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
-            libgstreamer-plugins-bad1.0-dev
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
       - name: Download linuxdeploy AppImage tools
         run: |
@@ -191,7 +185,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR" -DCMAKE_INSTALL_PREFIX=/usr
+          cmake .. -DCMAKE_INSTALL_PREFIX=/usr
           make --jobs="$(nproc)"
           make install DESTDIR="$GITHUB_WORKSPACE/AppDir"
 
@@ -200,6 +194,7 @@ jobs:
           # No FUSE inside the GitHub Actions container - extract and run instead.
           APPIMAGE_EXTRACT_AND_RUN: '1'
           ARCH: aarch64
+          QMAKE: /usr/lib/qt6/bin/qmake6
         run: |
           VERSION="$(cat VERSION)-$(git rev-parse --short HEAD)"
           export VERSION
