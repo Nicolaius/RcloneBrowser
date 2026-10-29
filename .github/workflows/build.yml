@@ -171,7 +171,9 @@ jobs:
             libgl1-mesa-dev \
             libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-image0 \
             libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
-            libxcb-xinerama0 libxcb-xkb1
+            libxcb-xinerama0 libxcb-xkb1 \
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+            libgstreamer-plugins-bad1.0-dev
 
       - name: Download linuxdeploy AppImage tools
         run: |
