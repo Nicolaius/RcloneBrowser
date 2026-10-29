@@ -149,7 +149,7 @@ jobs:
   build_linux_arm64:
     name: Linux Build (AppImage, ARM64)
     # GitHub-hosted native ARM64 runner (free for public repositories)
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v4
